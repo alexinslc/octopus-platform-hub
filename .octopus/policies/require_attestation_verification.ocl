@@ -1,0 +1,18 @@
+name = "Require Attestation Verification"
+violation_action = "block"
+
+conditions {
+    rego = <<-EOT
+            package require_attestation_verification
+            
+            default result := {"allowed": true}
+            EOT
+}
+
+scope {
+    rego = <<-EOT
+            package require_attestation_verification
+            
+            default evaluate := true
+            EOT
+}
