@@ -5,7 +5,23 @@ conditions {
     rego = <<-EOT
             package require_attestation_verification
             
-            default result := {"allowed": true}
+                default result := {"allowed": false}
+            
+                result := {"allowed": true} if {
+                    startswith(input.Steps[0].Source.SlugOrId, "dsc-verify-build-artifacts")
+                    input.Steps[0].Enabled == true
+                    not verify_build_artifacts_skipped
+                }
+            
+                result := {"allowed": false, "Reason": "Artifact verification and attestation is required and cannot be skipped."} if {
+                    verify_build_artifacts_skipped
+                }
+            
+                verify_build_artifacts_skipped if {
+                    some step in input.Steps
+                    step.Id in input.SkippedSteps
+                    startswith(step.Source.SlugOrId, "dsc-verify-build-artifacts")
+                }
             EOT
 }
 
@@ -13,6 +29,11 @@ scope {
     rego = <<-EOT
             package require_attestation_verification
             
-            default evaluate := true
+            default evaluate := false
+            
+                evaluate := true if { 
+                    startswith(input.ProjectGroup.Slug, "compliant-")
+                    not input.Runbook
+                }
             EOT
 }
