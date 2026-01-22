@@ -1,0 +1,18 @@
+name = "Manual Intervention Cannot Skip"
+violation_action = "block"
+
+conditions {
+    rego = <<-EOT
+            package manual_intervention_cannot_skip
+            
+            default result := {"allowed": true}
+            EOT
+}
+
+scope {
+    rego = <<-EOT
+            package manual_intervention_cannot_skip
+            
+            default evaluate := true
+            EOT
+}
